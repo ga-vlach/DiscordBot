@@ -11,13 +11,13 @@ class Moderation(commands.Cog):
         print("moderation loaded")
     
 
-    @commands.has_permissions(administrator = True)
+    @commands.has_permissions(kick_members = True)
     @commands.command(pass_context = True)
     async def kick(self, ctx, member: discord.Member, *, reason = None):
 
         await member.kick(reason = reason)
-        #await ctx.send("User was kicked.")
     
+    @commands.has_permissions(ban_members = True)
     @commands.command(pass_context = True)
     async def ban(self, ctx, member: discord.Member, *, reason = None):
 
