@@ -13,13 +13,13 @@ class Moderation(commands.Cog):
 
     @commands.has_permissions(kick_members = True)
     @commands.command(pass_context = True)
-    async def kick(self, ctx, member: discord.Member, *, reason = None):
+    async def kick(self, ctx, member: discord.Member, reason = None):
 
         await member.kick(reason = reason)
     
     @commands.has_permissions(ban_members = True)
     @commands.command(pass_context = True)
-    async def ban(self, ctx, member: discord.Member, *, reason = None):
+    async def ban(self, ctx, member: discord.Member, reason = None):
 
         await member.ban(reason = reason)
 

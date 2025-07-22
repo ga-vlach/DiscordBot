@@ -10,9 +10,6 @@ class Fun(commands.Cog):
         
         self.client = client
         print("games loaded")
-        # conn = sqlite3.connect("leveling.db")
-        # cur = conn.cursor()
-        # cur.execute("CREATE TABLE uservalues(userid, xp, level)")
 
 
     @commands.command()
@@ -32,16 +29,15 @@ class Fun(commands.Cog):
             await ctx.send("You ran out of time! Be faster next time!")
 
         else:
-
-            if not (msg.content.startswith("Rock") or msg.content.startswith("rock")
-                or msg.content.startswith("Paper") or msg.content.startswith("paper")
-                or msg.content.startswith("Scissors") or msg.content.startswith("scissors")):
+            #converts the user's message to lowercase, so user input isn't case sensitive
+            if not (msg.content.lower().startswith("rock")
+                or msg.content.lower().startswith("paper")
+                or msg.content.lower().startswith("scissors")):
 
                 await ctx.send("Invalid input. You can only use rock, paper, or scissors!")
                 return
 
-
-            if (msg.content.startswith("Rock") or msg.content.startswith("rock")):
+            if (msg.content.lower().startswith("rock")):
                 if (bot_choice == "Rock"):
                     result = "It's a draw!"
                 if (bot_choice == "Scissors"):
@@ -49,7 +45,7 @@ class Fun(commands.Cog):
                 if (bot_choice == "Paper"):
                     result = "I won! Better luck next time!"
             
-            if (msg.content.startswith("Scissors") or msg.content.startswith("scissors")):
+            if (msg.content.lower().startswith("scissors")):
                 if (bot_choice == "Rock"):
                     result = "I won! Better luck next time!"
                 if (bot_choice == "Scissors"):
@@ -57,7 +53,7 @@ class Fun(commands.Cog):
                 if (bot_choice == "Paper"):
                     result = "You win! You beat me!"
             
-            if (msg.content.startswith("Paper") or msg.content.startswith("paper")):
+            if (msg.content.lower().startswith("paper")):
                 if (bot_choice == "Rock"):
                     result = "You win! You beat me!"
                 if (bot_choice == "Scissors"):
@@ -69,6 +65,7 @@ class Fun(commands.Cog):
             await ctx.send(result)
 
 
+    #inputs the member that joins the server in the database and inputs necessary info inside it
     @commands.Cog.listener()
     async def on_member_join(self, member):
 
@@ -83,24 +80,24 @@ class Fun(commands.Cog):
         conn.close()
 
 
+    #updates the user's xp and level data if needed
     @commands.Cog.listener()
     async def on_message(self, message):
         
         user = message.author.id
-        # channel = self.client.get_channel(message.channel.id)
-        # print(channel)
 
         conn = sqlite3.connect("leveling.db")
         cur = conn.cursor()
         cur.execute("SELECT xp, level FROM uservalues WHERE userid = ?", (user,))
         results = cur.fetchone()
         
+        #updates user's xp every message
         old_xp = results[0]
         level = results[1]
         new_xp = old_xp + 1
         xp_req = 2 * (level + 1) * 2.5
 
-
+        #checks if user is eligible for a level up
         if new_xp == xp_req:
 
             level += 1
@@ -114,15 +111,16 @@ class Fun(commands.Cog):
         conn.close()
     
 
+    #displays the specified person's username, xp and level
     @commands.command()
-    async def rank(self, message, user: discord.User):
+    async def rank(self, message, user: discord.User=None):
 
-        if user.mentioned_in(message):
+        if user == None:
             
-            username = user.name
+            username = message.author.name
         else:
 
-            username = message.author.name
+            username = user.name
 
         conn = sqlite3.connect("leveling.db")
         cur = conn.cursor()
@@ -131,8 +129,6 @@ class Fun(commands.Cog):
         
         await message.channel.send(f"``{result[0]}``\n``xp: {result[1]}``\n``level: {result[2]}``")
 
-
-#make a time command that tells the time in different parts of the world
 
 
 async def setup(client):
